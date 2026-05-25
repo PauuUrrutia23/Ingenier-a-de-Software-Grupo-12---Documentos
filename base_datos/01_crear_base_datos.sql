@@ -1,1 +1,0 @@
-CREATE DATABASE ingecon_incremento1;
