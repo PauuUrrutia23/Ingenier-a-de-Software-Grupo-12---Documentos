@@ -4,11 +4,8 @@ Videos Incremento 1:
 -Presentación Incremento 1
 https://drive.google.com/file/d/1TLpVMOKOQ0Ip2Vi2jLWSQwHNi0k2IV8c/view?usp=drive_link
 
--Instalación Windows 
+-Video Instalación
 https://drive.google.com/file/d/1_j2zhtGn_7cTyAq6t2a7XoPCLZRtKGj3/view?usp=drive_link
-
--Instalación Linux 
-https://drive.google.com/file/d/1gEGvAdtHzoTe-UunjOqtzqF42MHy_6lc/view?usp=drive_link
 
 -Funcionalidades Web 
 https://drive.google.com/file/d/1XxG3Zu3uZy5qrFjHYbOOeaAtuKxktTY2/view?usp=drive_link
