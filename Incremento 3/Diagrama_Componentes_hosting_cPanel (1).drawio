@@ -1,0 +1,457 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="Ingecon Arquitectura v7" id="ingecon-v7">
+    <mxGraphModel dx="1800" dy="1000" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="3200" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- ══════════════════════════════════════════════════════════
+             ACTORES
+        ══════════════════════════════════════════════════════════════ -->
+        <mxCell id="act_v" parent="1" vertex="1"
+          style="shape=umlActor;html=1;verticalLabelPosition=bottom;verticalAlign=top;fillColor=#f5f5f5;strokeColor=#444;strokeWidth=2;fontStyle=1;fontSize=11;"
+          value="&lt;b&gt;Visitante&lt;/b&gt;">
+          <mxGeometry x="28" y="220" width="44" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="act_a" parent="1" vertex="1"
+          style="shape=umlActor;html=1;verticalLabelPosition=bottom;verticalAlign=top;fillColor=#f5f5f5;strokeColor=#444;strokeWidth=2;fontStyle=1;fontSize=11;"
+          value="&lt;b&gt;Administrador&lt;/b&gt;">
+          <mxGeometry x="28" y="480" width="44" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- ══════════════════════════════════════════════════════════
+             CAPA 1 — CLIENTE WEB
+        ══════════════════════════════════════════════════════════════ -->
+        <mxCell id="box_cli" parent="1" vertex="1"
+          style="swimlane;html=1;fillColor=#f0e4e4;strokeColor=#ad7d7b;strokeWidth=3;fontStyle=1;fontSize=12;startSize=44;rounded=1;arcSize=4;"
+          value="&lt;b&gt;Cliente Web&lt;/b&gt;&lt;br/&gt;&lt;i&gt;«Boundary» – Presentación&lt;/i&gt;">
+          <mxGeometry x="110" y="60" width="260" height="760" as="geometry" />
+        </mxCell>
+        <mxCell id="c_blade" parent="box_cli" vertex="1"
+          style="shape=component;html=1;fillColor=#e3ece3;strokeColor=#8c9e82;strokeWidth=2;rounded=1;arcSize=10;fontSize=10;"
+          value="&lt;b&gt;Vistas Blade&lt;/b&gt;&lt;br/&gt;&lt;font color='#8c9e82'&gt;«Boundary»&lt;/font&gt;&lt;br/&gt;&lt;i&gt;Motor Plantillas · UI&lt;/i&gt;">
+          <mxGeometry x="45" y="60" width="170" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="c_tail" parent="box_cli" vertex="1"
+          style="shape=component;html=1;fillColor=#e3ece3;strokeColor=#8c9e82;strokeWidth=2;rounded=1;arcSize=10;fontSize=10;"
+          value="&lt;b&gt;Tailwind CSS&lt;/b&gt;&lt;br/&gt;&lt;font color='#8c9e82'&gt;«Boundary»&lt;/font&gt;&lt;br/&gt;&lt;i&gt;Framework CSS&lt;/i&gt;">
+          <mxGeometry x="45" y="220" width="170" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="c_alp" parent="box_cli" vertex="1"
+          style="shape=component;html=1;fillColor=#e3ece3;strokeColor=#8c9e82;strokeWidth=2;rounded=1;arcSize=10;fontSize=10;"
+          value="&lt;b&gt;Alpine.js&lt;/b&gt;&lt;br/&gt;&lt;font color='#8c9e82'&gt;«Boundary»&lt;/font&gt;&lt;br/&gt;&lt;i&gt;Reactividad Front-End&lt;/i&gt;">
+          <mxGeometry x="45" y="360" width="170" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="c_leaf" parent="box_cli" vertex="1"
+          style="shape=component;html=1;fillColor=#e3ece3;strokeColor=#8c9e82;strokeWidth=2;rounded=1;arcSize=10;fontSize=10;"
+          value="&lt;b&gt;Leaflet.js&lt;/b&gt;&lt;br/&gt;&lt;font color='#8c9e82'&gt;«Boundary»&lt;/font&gt;&lt;br/&gt;&lt;i&gt;Mapas Interactivos&lt;/i&gt;">
+          <mxGeometry x="45" y="500" width="170" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- flechas internas CLI → Blade -->
+        <mxCell id="ei_tb" edge="1" parent="box_cli" source="c_tail" target="c_blade"
+          style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#8c9e82;strokeWidth=1;endArrow=open;endSize=7;fontSize=9;fontColor=#8c9e82;exitX=0.5;exitY=0;entryX=0.5;entryY=1;"
+          value="estilos">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ei_ab" edge="1" parent="box_cli" source="c_alp" target="c_blade"
+          style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#8c9e82;strokeWidth=1;endArrow=open;endSize=7;fontSize=9;fontColor=#8c9e82;exitX=0.5;exitY=0;entryX=0.5;entryY=1;"
+          value="reactividad">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ei_lb" edge="1" parent="box_cli" source="c_leaf" target="c_blade"
+          style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#8c9e82;strokeWidth=1;endArrow=open;endSize=7;fontSize=9;fontColor=#8c9e82;exitX=0.5;exitY=0;entryX=0.5;entryY=1;"
+          value="mapas">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ══════════════════════════════════════════════════════════
+             CAPA 2 — SERVIDOR WEB
+             Columnas relativas:
+               C1 (Entrada):       x=20  w=170
+               C2 (Router HTTP):   x=220 w=150
+               C3 (Controladores): x=400 w=185
+               C4 (Servicios):     x=620 w=185
+               C5 (DBRouter+ORM):  x=850 w=215
+             Total ancho usado: ~1070 → box w=1180
+        ══════════════════════════════════════════════════════════════ -->
+        <mxCell id="box_srv" parent="1" vertex="1"
+          style="swimlane;html=1;fillColor=#f5ebdf;strokeColor=#b89d5a;strokeWidth=3;fontStyle=1;fontSize=12;startSize=44;rounded=1;arcSize=4;"
+          value="&lt;b&gt;Servidor Web&lt;/b&gt;&lt;br/&gt;&lt;i&gt;Núcleo Backend – MVC + ECB&lt;/i&gt;">
+          <mxGeometry x="420" y="60" width="1180" height="820" as="geometry" />
+        </mxCell>
+
+        <!-- ── C1: Entrada ── -->
+        <mxCell id="c_apache" parent="box_srv" vertex="1"
+          style="shape=component;html=1;fillColor=#e3ece3;strokeColor=#8c9e82;strokeWidth=2;rounded=1;arcSize=10;fontSize=10;"
+          value="&lt;b&gt;Apache&lt;/b&gt;&lt;br/&gt;&lt;font color='#8c9e82'&gt;«Boundary»&lt;/font&gt;&lt;br/&gt;&lt;i&gt;Servidor Web (hosting compartido)&lt;/i&gt;">
+          <mxGeometry x="20" y="150" width="170" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- ── C2: Router HTTP ── -->
+        <mxCell id="c_router" parent="box_srv" vertex="1"
+          style="shape=component;html=1;fillColor=#f5f0e1;strokeColor=#b8ad8a;strokeWidth=2;rounded=1;arcSize=10;fontSize=10;"
+          value="&lt;b&gt;Router HTTP&lt;/b&gt;&lt;br/&gt;&lt;font color='#b8ad8a'&gt;«Control»&lt;/font&gt;&lt;br/&gt;&lt;i&gt;Dispatcher de rutas&lt;/i&gt;">
+          <mxGeometry x="220" y="150" width="150" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- ── C3: Controladores ── -->
+        <mxCell id="c_auth" parent="box_srv" vertex="1"
+          style="shape=component;html=1;fillColor=#f5f0e1;strokeColor=#b8ad8a;strokeWidth=2;rounded=1;arcSize=10;fontSize=10;"
+          value="&lt;b&gt;AuthController&lt;/b&gt;&lt;br/&gt;&lt;font color='#b8ad8a'&gt;«Control»&lt;/font&gt;&lt;br/&gt;&lt;i&gt;Registro · Login · Sesión&lt;/i&gt;">
+          <mxGeometry x="400" y="60" width="185" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="c_inst" parent="box_srv" vertex="1"
+          style="shape=component;html=1;fillColor=#f5f0e1;strokeColor=#b8ad8a;strokeWidth=2;rounded=1;arcSize=10;fontSize=10;"
+          value="&lt;b&gt;InstitucionalCtrl&lt;/b&gt;&lt;br/&gt;&lt;font color='#b8ad8a'&gt;«Control»&lt;/font&gt;&lt;br/&gt;&lt;i&gt;Páginas institucionales&lt;/i&gt;">
+          <mxGeometry x="400" y="160" width="185" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="c_cont" parent="box_srv" vertex="1"
+          style="shape=component;html=1;fillColor=#f5f0e1;strokeColor=#b8ad8a;strokeWidth=2;rounded=1;arcSize=10;fontSize=10;"
+          value="&lt;b&gt;ContactoController&lt;/b&gt;&lt;br/&gt;&lt;font color='#b8ad8a'&gt;«Control»&lt;/font&gt;&lt;br/&gt;&lt;i&gt;Formularios y consultas&lt;/i&gt;">
+          <mxGeometry x="400" y="260" width="185" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="c_proy" parent="box_srv" vertex="1"
+          style="shape=component;html=1;fillColor=#f5f0e1;strokeColor=#b8ad8a;strokeWidth=2;rounded=1;arcSize=10;fontSize=10;"
+          value="&lt;b&gt;ProyectoController&lt;/b&gt;&lt;br/&gt;&lt;font color='#b8ad8a'&gt;«Control»&lt;/font&gt;&lt;br/&gt;&lt;i&gt;Gestión proyectos&lt;/i&gt;">
+          <mxGeometry x="400" y="360" width="185" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="c_crm" parent="box_srv" vertex="1"
+          style="shape=component;html=1;fillColor=#f5f0e1;strokeColor=#b8ad8a;strokeWidth=2;rounded=1;arcSize=10;fontSize=10;"
+          value="&lt;b&gt;CrmController&lt;/b&gt;&lt;br/&gt;&lt;font color='#b8ad8a'&gt;«Control»&lt;/font&gt;&lt;br/&gt;&lt;i&gt;Clientes y reportes&lt;/i&gt;">
+          <mxGeometry x="400" y="460" width="185" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="c_adm" parent="box_srv" vertex="1"
+          style="shape=component;html=1;fillColor=#f5f0e1;strokeColor=#b8ad8a;strokeWidth=2;rounded=1;arcSize=10;fontSize=10;"
+          value="&lt;b&gt;AdminController&lt;/b&gt;&lt;br/&gt;&lt;font color='#b8ad8a'&gt;«Control»&lt;/font&gt;&lt;br/&gt;&lt;i&gt;Dashboard y CRUD&lt;/i&gt;">
+          <mxGeometry x="400" y="560" width="185" height="70" as="geometry" />
+        </mxCell>
+        <!-- ── C4: Servicios ── -->
+        <mxCell id="c_notif" parent="box_srv" vertex="1"
+          style="shape=component;html=1;fillColor=#f5f0e1;strokeColor=#b8ad8a;strokeWidth=2;rounded=1;arcSize=10;fontSize=10;"
+          value="&lt;b&gt;NotificationService&lt;/b&gt;&lt;br/&gt;&lt;font color='#b8ad8a'&gt;«Control»&lt;/font&gt;&lt;br/&gt;&lt;i&gt;Orquesta correos&lt;/i&gt;">
+          <mxGeometry x="620" y="60" width="185" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="c_resadp" parent="box_srv" vertex="1"
+          style="shape=component;html=1;fillColor=#e3ece3;strokeColor=#8c9e82;strokeWidth=2;rounded=1;arcSize=10;fontSize=10;"
+          value="&lt;b&gt;SendmailAdapter&lt;/b&gt;&lt;br/&gt;&lt;font color='#8c9e82'&gt;«Boundary»&lt;/font&gt;&lt;br/&gt;&lt;i&gt;/usr/sbin/sendmail local&lt;/i&gt;">
+          <mxGeometry x="620" y="160" width="185" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="c_arg" parent="box_srv" vertex="1"
+          style="shape=component;html=1;fillColor=#e6ebf2;strokeColor=#8c9db3;strokeWidth=2;rounded=1;arcSize=10;fontSize=10;"
+          value="&lt;b&gt;Argon2id&lt;/b&gt;&lt;br/&gt;&lt;font color='#8c9db3'&gt;«Entity»&lt;/font&gt;&lt;br/&gt;&lt;i&gt;Hashing (fallback bcrypt)&lt;/i&gt;">
+          <mxGeometry x="620" y="280" width="185" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="c_vpdf" parent="box_srv" vertex="1"
+          style="shape=component;html=1;fillColor=#e6ebf2;strokeColor=#8c9db3;strokeWidth=2;rounded=1;arcSize=10;fontSize=10;"
+          value="&lt;b&gt;FinfoValidator&lt;/b&gt;&lt;br/&gt;&lt;font color='#8c9db3'&gt;«Entity»&lt;/font&gt;&lt;br/&gt;&lt;i&gt;Validación MIME (PHP finfo)&lt;/i&gt;">
+          <mxGeometry x="620" y="375" width="185" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="c_sto" parent="box_srv" vertex="1"
+          style="shape=component;html=1;fillColor=#e6ebf2;strokeColor=#8c9db3;strokeWidth=2;rounded=1;arcSize=10;fontSize=10;"
+          value="&lt;b&gt;StorageAdapter&lt;/b&gt;&lt;br/&gt;&lt;font color='#8c9db3'&gt;«Entity»&lt;/font&gt;&lt;br/&gt;&lt;i&gt;Archivos en storage/ (fuera de BD)&lt;/i&gt;">
+          <mxGeometry x="620" y="470" width="185" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="c_excel" parent="box_srv" vertex="1"
+          style="shape=component;html=1;fillColor=#e6ebf2;strokeColor=#8c9db3;strokeWidth=2;rounded=1;arcSize=10;fontSize=10;"
+          value="&lt;b&gt;Spatie Excel&lt;/b&gt;&lt;br/&gt;&lt;font color='#8c9db3'&gt;«Entity»&lt;/font&gt;&lt;br/&gt;&lt;i&gt;Exportación XLSX&lt;/i&gt;">
+          <mxGeometry x="620" y="565" width="185" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- ── C5: DBRouter + Eloquent ORM ── -->
+        <mxCell id="c_dbrouter" parent="box_srv" vertex="1"
+          style="shape=component;html=1;fillColor=#fff2cc;strokeColor=#d6b656;strokeWidth=4;rounded=1;arcSize=10;fontSize=11;fontStyle=1;"
+          value="&lt;b&gt;DBRouterController&lt;/b&gt;&lt;br/&gt;&lt;font color='#d6b656'&gt;«Control»&lt;/font&gt;&lt;br/&gt;&lt;i&gt;Intermediario BD&lt;/i&gt;">
+          <mxGeometry x="850" y="300" width="215" height="85" as="geometry" />
+        </mxCell>
+        <mxCell id="c_orm" parent="box_srv" vertex="1"
+          style="shape=component;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;strokeWidth=3;rounded=1;arcSize=10;fontSize=10;fontStyle=1;"
+          value="&lt;b&gt;Eloquent ORM&lt;/b&gt;&lt;br/&gt;&lt;font color='#6c8ebf'&gt;«Entity»&lt;/font&gt;&lt;br/&gt;&lt;i&gt;Mapeo Objeto-Relacional&lt;/i&gt;">
+          <mxGeometry x="850" y="500" width="215" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- ══════════════════════════════════════════════════════════
+             FLECHAS INTERNAS — SERVIDOR WEB (parent="box_srv")
+        ══════════════════════════════════════════════════════════════ -->
+
+        <!-- Apache → Router HTTP (sin proxy inverso, Apache sirve Laravel directo) -->
+        <mxCell id="e_ap_rt" edge="1" parent="box_srv" source="c_apache" target="c_router"
+          style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#b89d5a;strokeWidth=2;endArrow=open;endSize=8;fontSize=9;fontColor=#b89d5a;exitX=1;exitY=0.5;entryX=0;entryY=0.5;"
+          value="reenvia">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Router HTTP → Controladores (bus vertical en x=385) -->
+        <mxCell id="e_rt_au" edge="1" parent="box_srv" source="c_router" target="c_auth"
+          style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#b8ad8a;strokeWidth=1;endArrow=open;endSize=7;exitX=1;exitY=0.5;entryX=0;entryY=0.5;">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"><mxPoint x="385" y="185" /><mxPoint x="385" y="95" /></Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_rt_in" edge="1" parent="box_srv" source="c_router" target="c_inst"
+          style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#b8ad8a;strokeWidth=1;endArrow=open;endSize=7;exitX=1;exitY=0.5;entryX=0;entryY=0.5;">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"><mxPoint x="385" y="185" /><mxPoint x="385" y="195" /></Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_rt_co" edge="1" parent="box_srv" source="c_router" target="c_cont"
+          style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#b8ad8a;strokeWidth=1;endArrow=open;endSize=7;exitX=1;exitY=0.5;entryX=0;entryY=0.5;">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"><mxPoint x="385" y="185" /><mxPoint x="385" y="295" /></Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_rt_pr" edge="1" parent="box_srv" source="c_router" target="c_proy"
+          style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#b8ad8a;strokeWidth=1;endArrow=open;endSize=7;exitX=1;exitY=0.5;entryX=0;entryY=0.5;">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"><mxPoint x="385" y="185" /><mxPoint x="385" y="395" /></Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_rt_cr" edge="1" parent="box_srv" source="c_router" target="c_crm"
+          style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#b8ad8a;strokeWidth=1;endArrow=open;endSize=7;exitX=1;exitY=0.5;entryX=0;entryY=0.5;">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"><mxPoint x="385" y="185" /><mxPoint x="385" y="495" /></Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_rt_ad" edge="1" parent="box_srv" source="c_router" target="c_adm"
+          style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#b8ad8a;strokeWidth=1;endArrow=open;endSize=7;exitX=1;exitY=0.5;entryX=0;entryY=0.5;">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"><mxPoint x="385" y="185" /><mxPoint x="385" y="595" /></Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- (WebhookGateway/EmailEventWHCtrl eliminados: sin requerimiento que los respalde) -->
+
+        <!-- Auth → Argon2id (bus en x=605) -->
+        <mxCell id="e_au_arg" edge="1" parent="box_srv" source="c_auth" target="c_arg"
+          style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#8c9db3;strokeWidth=1;endArrow=open;endSize=7;fontSize=9;fontColor=#8c9db3;exitX=1;exitY=0.5;entryX=0;entryY=0.5;"
+          value="hash pwd">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"><mxPoint x="602" y="95" /><mxPoint x="602" y="315" /></Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Auth → NotificationService -->
+        <mxCell id="e_au_nt" edge="1" parent="box_srv" source="c_auth" target="c_notif"
+          style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#b8ad8a;strokeWidth=1;endArrow=open;endSize=7;fontSize=9;fontColor=#b8ad8a;exitX=1;exitY=0.5;entryX=0;entryY=0.5;"
+          value="bienvenida">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Contacto → NotificationService (bus x=602) -->
+        <mxCell id="e_co_nt" edge="1" parent="box_srv" source="c_cont" target="c_notif"
+          style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#b8ad8a;strokeWidth=1;endArrow=open;endSize=7;fontSize=9;fontColor=#b8ad8a;exitX=1;exitY=0.5;entryX=0;entryY=0.5;"
+          value="notifica">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"><mxPoint x="602" y="295" /><mxPoint x="602" y="95" /></Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Contacto → veraPDF (bus x=602) -->
+        <mxCell id="e_co_vp" edge="1" parent="box_srv" source="c_cont" target="c_vpdf"
+          style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#8c9db3;strokeWidth=1;endArrow=open;endSize=7;fontSize=9;fontColor=#8c9db3;exitX=1;exitY=0.5;entryX=0;entryY=0.5;"
+          value="valida PDF">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"><mxPoint x="602" y="295" /><mxPoint x="602" y="410" /></Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- NotificationService → ResendAdapter (vertical) -->
+        <mxCell id="e_nt_ra" edge="1" parent="box_srv" source="c_notif" target="c_resadp"
+          style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#8c9e82;strokeWidth=1;endArrow=open;endSize=7;fontSize=9;fontColor=#8c9e82;exitX=0.5;exitY=1;entryX=0.5;entryY=0;"
+          value="payload">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- CrmController → Spatie Excel (bus x=602) -->
+        <mxCell id="e_cr_ex" edge="1" parent="box_srv" source="c_crm" target="c_excel"
+          style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#8c9db3;strokeWidth=1;endArrow=open;endSize=7;fontSize=9;fontColor=#8c9db3;exitX=1;exitY=0.5;entryX=0;entryY=0.5;"
+          value="exporta">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"><mxPoint x="602" y="495" /><mxPoint x="602" y="600" /></Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- AdminController → StorageAdapter (bus x=602) -->
+        <mxCell id="e_ad_st" edge="1" parent="box_srv" source="c_adm" target="c_sto"
+          style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#8c9db3;strokeWidth=1;endArrow=open;endSize=7;fontSize=9;fontColor=#8c9db3;exitX=1;exitY=0.5;entryX=0;entryY=0.5;"
+          value="archivos">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"><mxPoint x="602" y="595" /><mxPoint x="602" y="505" /></Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- ── Controladores → DBRouterController (bus en x=830, escalonado) ── -->
+        <mxCell id="e_au_dbr" edge="1" parent="box_srv" source="c_auth" target="c_dbrouter"
+          style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#d6b656;strokeWidth=2;endArrow=open;endSize=8;exitX=1;exitY=0.5;entryX=0;entryY=0.5;">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"><mxPoint x="838" y="95" /><mxPoint x="838" y="342" /></Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_in_dbr" edge="1" parent="box_srv" source="c_inst" target="c_dbrouter"
+          style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#d6b656;strokeWidth=2;endArrow=open;endSize=8;exitX=1;exitY=0.5;entryX=0;entryY=0.5;">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"><mxPoint x="835" y="195" /><mxPoint x="835" y="342" /></Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_co_dbr" edge="1" parent="box_srv" source="c_cont" target="c_dbrouter"
+          style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#d6b656;strokeWidth=2;endArrow=open;endSize=8;exitX=1;exitY=0.5;entryX=0;entryY=0.5;">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"><mxPoint x="832" y="295" /><mxPoint x="832" y="342" /></Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_pr_dbr" edge="1" parent="box_srv" source="c_proy" target="c_dbrouter"
+          style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#d6b656;strokeWidth=2;endArrow=open;endSize=8;fontSize=9;fontColor=#d6b656;exitX=1;exitY=0.5;entryX=0;entryY=0.5;"
+          value="CRUD">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"><mxPoint x="829" y="395" /><mxPoint x="829" y="342" /></Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_cr_dbr" edge="1" parent="box_srv" source="c_crm" target="c_dbrouter"
+          style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#d6b656;strokeWidth=2;endArrow=open;endSize=8;exitX=1;exitY=0.5;entryX=0;entryY=0.5;">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"><mxPoint x="826" y="495" /><mxPoint x="826" y="342" /></Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_ad_dbr" edge="1" parent="box_srv" source="c_adm" target="c_dbrouter"
+          style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#d6b656;strokeWidth=2;endArrow=open;endSize=8;exitX=1;exitY=0.5;entryX=0;entryY=0.5;">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"><mxPoint x="823" y="595" /><mxPoint x="823" y="342" /></Array>
+          </mxGeometry>
+        </mxCell>
+        <!-- (bus de EmailEventWHCtrl a DBRouterController eliminado junto con el nodo) -->
+
+        <!-- DBRouterController → Eloquent ORM (vertical, misma columna) -->
+        <mxCell id="e_dbr_or" edge="1" parent="box_srv" source="c_dbrouter" target="c_orm"
+          style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#6c8ebf;strokeWidth=3;endArrow=open;endSize=10;fontSize=10;fontColor=#6c8ebf;fontStyle=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;"
+          value="queries">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Spatie Excel → Eloquent ORM (bus x=835) -->
+        <mxCell id="e_ex_or" edge="1" parent="box_srv" source="c_excel" target="c_orm"
+          style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#8c9db3;strokeWidth=1;endArrow=open;endSize=7;fontSize=9;fontColor=#8c9db3;exitX=1;exitY=0.5;entryX=0;entryY=0.5;"
+          value="procesa">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"><mxPoint x="835" y="600" /><mxPoint x="835" y="540" /></Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- ══════════════════════════════════════════════════════════
+             CAPA 3 — SERVIDOR BD
+        ══════════════════════════════════════════════════════════════ -->
+        <mxCell id="box_bd" parent="1" vertex="1"
+          style="swimlane;html=1;fillColor=#e3ece3;strokeColor=#8c9e82;strokeWidth=3;fontStyle=1;fontSize=12;startSize=44;rounded=1;arcSize=4;"
+          value="&lt;b&gt;Servidor BD&lt;/b&gt;&lt;br/&gt;&lt;i&gt;«Entity» – Persistencia&lt;/i&gt;">
+          <mxGeometry x="1660" y="60" width="300" height="720" as="geometry" />
+        </mxCell>
+
+        <mxCell id="c_pg" parent="box_bd" vertex="1"
+          style="shape=component;html=1;fillColor=#e6ebf2;strokeColor=#8c9db3;strokeWidth=2;rounded=1;arcSize=10;fontSize=10;"
+          value="&lt;b&gt;MySQL&lt;/b&gt;&lt;br/&gt;&lt;font color='#8c9db3'&gt;«Entity»&lt;/font&gt;&lt;br/&gt;&lt;i&gt;Base de Datos Relacional (5.6)&lt;/i&gt;">
+          <mxGeometry x="60" y="130" width="180" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="c_fs" parent="box_bd" vertex="1"
+          style="shape=component;html=1;fillColor=#e6ebf2;strokeColor=#8c9db3;strokeWidth=2;rounded=1;arcSize=10;fontSize=10;"
+          value="&lt;b&gt;Filesystem&lt;/b&gt;&lt;br/&gt;&lt;font color='#8c9db3'&gt;«Entity»&lt;/font&gt;&lt;br/&gt;&lt;i&gt;Sistema de Archivos&lt;/i&gt;">
+          <mxGeometry x="60" y="380" width="180" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="c_cron" parent="box_bd" vertex="1"
+          style="shape=component;html=1;fillColor=#f5f0e1;strokeColor=#b8ad8a;strokeWidth=2;rounded=1;arcSize=10;fontSize=10;"
+          value="&lt;b&gt;Cron Jobs&lt;/b&gt;&lt;br/&gt;&lt;font color='#b8ad8a'&gt;«Control»&lt;/font&gt;&lt;br/&gt;&lt;i&gt;Backups y Tareas&lt;/i&gt;">
+          <mxGeometry x="60" y="560" width="180" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- CronJobs → PostgreSQL (interna box_bd) -->
+        <mxCell id="e_cr_pg" edge="1" parent="box_bd" source="c_cron" target="c_pg"
+          style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#b8ad8a;strokeWidth=1;endArrow=open;endSize=7;fontSize=9;fontColor=#b8ad8a;exitX=0.5;exitY=0;entryX=0.5;entryY=1;"
+          value="mysqldump">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"><mxPoint x="150" y="540" /><mxPoint x="150" y="220" /></Array>
+          </mxGeometry>
+        </mxCell>
+        <!-- CronJobs → Filesystem (interna box_bd) -->
+        <mxCell id="e_cr_fs" edge="1" parent="box_bd" source="c_cron" target="c_fs"
+          style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#b8ad8a;strokeWidth=1;endArrow=open;endSize=7;fontSize=9;fontColor=#b8ad8a;exitX=0.5;exitY=0;entryX=0.5;entryY=1;"
+          value="save .sql">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ══════════════════════════════════════════════════════════
+             CAPA 4 — SERVICIOS EXTERNOS
+        ══════════════════════════════════════════════════════════════ -->
+        <mxCell id="box_ext" parent="1" vertex="1"
+          style="swimlane;html=1;fillColor=#e6e4e8;strokeColor=#978a9e;strokeWidth=3;fontStyle=1;fontSize=12;startSize=44;rounded=1;arcSize=4;"
+          value="&lt;b&gt;Servicios Externos&lt;/b&gt;&lt;br/&gt;&lt;i&gt;APIs y Proveedores Terceros&lt;/i&gt;">
+          <mxGeometry x="2000" y="60" width="280" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="c_osm" parent="box_ext" vertex="1"
+          style="shape=component;html=1;fillColor=#e6e4e8;strokeColor=#978a9e;strokeWidth=2;rounded=1;arcSize=10;fontSize=10;"
+          value="&lt;b&gt;OpenStreetMap&lt;/b&gt;&lt;br/&gt;&lt;font color='#978a9e'&gt;Ext.&lt;/font&gt;&lt;br/&gt;&lt;i&gt;Teselas Cartográficas&lt;/i&gt;">
+          <mxGeometry x="52" y="60" width="175" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- ══════════════════════════════════════════════════════════
+             FLECHAS INTER-CAPA (parent="1")
+        ══════════════════════════════════════════════════════════════ -->
+
+        <!-- Visitante → Blade -->
+        <mxCell id="e_av" edge="1" parent="1" source="act_v" target="c_blade"
+          style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#ad7d7b;strokeWidth=2;endArrow=open;endSize=8;fontSize=9;fontColor=#ad7d7b;"
+          value="Interactúa">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Administrador → Blade -->
+        <mxCell id="e_aa" edge="1" parent="1" source="act_a" target="c_blade"
+          style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#ad7d7b;strokeWidth=2;endArrow=open;endSize=8;fontSize=9;fontColor=#ad7d7b;exitX=1;exitY=0;entryX=0;entryY=1;"
+          value="Interactúa">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"><mxPoint x="90" y="480" /><mxPoint x="90" y="180" /></Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Blade → Apache (HTTPS) -->
+        <mxCell id="e_http" edge="1" parent="1" source="c_blade" target="c_apache"
+          style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#ad7d7b;strokeWidth=2;endArrow=open;endSize=8;fontSize=9;fontColor=#ad7d7b;exitX=1;exitY=0.5;entryX=0;entryY=0.5;"
+          value="HTTPS">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Eloquent ORM → PostgreSQL (cruza de box_srv a box_bd, flecha gruesa) -->
+        <mxCell id="e_orm_pg" edge="1" parent="1" source="c_orm" target="c_pg"
+          style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#6c8ebf;strokeWidth=5;endArrow=open;endSize=12;fontSize=11;fontColor=#6c8ebf;fontStyle=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;"
+          value="TCP:3306">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- (SendmailAdapter entrega localmente vía /usr/sbin/sendmail: no hay llamada externa ni webhook de retorno) -->
+
+        <!-- veraPDF → Filesystem (cruza de box_srv a box_bd) -->
+        <mxCell id="e_vp_fs" edge="1" parent="1" source="c_vpdf" target="c_fs"
+          style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#8c9db3;strokeWidth=1;endArrow=open;endSize=7;fontSize=9;fontColor=#8c9db3;exitX=1;exitY=0.5;entryX=0;entryY=0.5;"
+          value="I/O PDF">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"><mxPoint x="1630" y="470" /><mxPoint x="1630" y="510" /></Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- StorageAdapter → Filesystem (cruza de box_srv a box_bd) -->
+        <mxCell id="e_st_fs" edge="1" parent="1" source="c_sto" target="c_fs"
+          style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#8c9db3;strokeWidth=1;endArrow=open;endSize=7;fontSize=9;fontColor=#8c9db3;exitX=1;exitY=0.5;entryX=0;entryY=0.5;"
+          value="I/O Archivos">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Leaflet → OpenStreetMap (dashed, borde inferior) -->
+        <mxCell id="e_lf_osm" edge="1" parent="1" source="c_leaf" target="c_osm"
+          style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#978a9e;strokeWidth=2;endArrow=open;endSize=8;fontSize=9;fontColor=#978a9e;dashed=1;exitX=0.5;exitY=1;entryX=0.5;entryY=1;"
+          value="GET /tiles/...">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"><mxPoint x="370" y="950" /><mxPoint x="2140" y="950" /></Array>
+          </mxGeometry>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
