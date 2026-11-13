@@ -1,0 +1,288 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Administrador;
+use App\Models\RecuperacionPassword;
+use App\Models\Sesion;
+use App\Services\NotificationService;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Str;
+
+class AuthController extends Controller
+{
+    private const LIMITE_RECUPERACIONES_POR_HORA = 5;
+
+    private const REGLAS_PASSWORD = ['required', 'string', 'min:8', 'confirmed',
+        'regex:/[a-z]/', 'regex:/[A-Z]/', 'regex:/[0-9]/', 'regex:/[^a-zA-Z0-9]/'];
+
+    public function __construct(
+        private DBRouterController $db,
+        private NotificationService $notificaciones,
+    ) {
+    }
+
+    public function showLoginForm()
+    {
+        return view('auth.login');
+    }
+
+    public function login(Request $request)
+    {
+        $request->validate([
+            'correo' => 'required|email',
+            'password' => 'required'
+        ]);
+
+        try {
+            $admin = $this->db->query(Administrador::class)->where('correo', $request->correo)->first();
+        } catch (\Throwable $e) {
+            report($e);
+            return back()->withInput($request->only('correo'))->withErrors(['correo' => 'El acceso no está disponible temporalmente.']);
+        }
+
+        if (!$admin) {
+            return back()->withInput($request->only('correo'))->withErrors(['correo' => 'Credenciales inválidas.']);
+        }
+
+        if (!$admin->activo) {
+            return back()->withInput($request->only('correo'))->withErrors(['correo' => 'Cuenta inactiva. Contacte al administrador jefe.']);
+        }
+
+        if ($admin->bloqueado_hasta && $admin->bloqueado_hasta > Carbon::now()) {
+            $minutos = max(1, Carbon::now()->diffInMinutes($admin->bloqueado_hasta));
+
+            return back()->withInput($request->only('correo'))->withErrors([
+                'correo' => "Cuenta bloqueada temporalmente por intentos fallidos. Vuelva a intentarlo en {$minutos} minuto(s).",
+            ]);
+        }
+
+        if ($admin->bloqueado_hasta && $admin->bloqueado_hasta <= Carbon::now()) {
+            try {
+                $this->db->update($admin, ['bloqueado_hasta' => null, 'intentos_fallidos' => 0]);
+            } catch (\Throwable $e) {
+                report($e);
+                return back()->withInput($request->only('correo'))->withErrors(['correo' => 'El acceso no está disponible temporalmente.']);
+            }
+        }
+
+        if (Hash::check($request->password, $admin->password_hash)) {
+            try {
+                $this->db->update($admin, ['intentos_fallidos' => 0]);
+            } catch (\Throwable $e) {
+                report($e);
+                return back()->withInput($request->only('correo'))->withErrors(['correo' => 'El acceso no está disponible temporalmente.']);
+            }
+
+            Auth::login($admin);
+
+            // La sesión válida es la fila en "sesiones", ligada a un token guardado en la sesión de Laravel.
+            $request->session()->regenerate();
+
+            $token = Str::random(48);
+            $request->session()->put('sesion_ingecon', $token);
+
+            $this->db->create(Sesion::class, [
+                'id_admin' => $admin->id_admin,
+                'token_hash' => hash('sha256', $token),
+                'fecha_inicio' => Carbon::now(),
+                'estado' => 'activa',
+            ]);
+
+            return redirect()->intended('/admin/dashboard');
+        }
+
+        try {
+            $bloqueado = $this->db->transaccion(function () use ($admin) {
+                $actual = $this->db->query(Administrador::class)->whereKey($admin->id_admin)->lockForUpdate()->firstOrFail();
+                $intentos = $actual->intentos_fallidos + 1;
+                $cambios = ['intentos_fallidos' => $intentos];
+                if ($intentos >= 5) $cambios['bloqueado_hasta'] = Carbon::now()->addMinutes(60);
+                $this->db->update($actual, $cambios);
+                return $intentos >= 5;
+            });
+        } catch (\Throwable $e) {
+            report($e);
+            return back()->withInput($request->only('correo'))->withErrors(['correo' => 'El acceso no está disponible temporalmente.']);
+        }
+
+        if ($bloqueado) {
+            $this->notificaciones->notificarBloqueoCuenta($admin);
+
+            return back()->withInput($request->only('correo'))->withErrors(['correo' => 'Cuenta bloqueada por 60 minutos debido a múltiples intentos fallidos.']);
+        }
+
+        return back()->withInput($request->only('correo'))->withErrors(['correo' => 'Credenciales inválidas.']);
+    }
+
+    public function logout(Request $request)
+    {
+        $token = $request->session()->get('sesion_ingecon');
+
+        if (Auth::check() && $token !== null) {
+            try {
+                $this->db->query(Sesion::class)
+                    ->where('id_admin', Auth::id())
+                    ->where('token_hash', hash('sha256', $token))
+                    ->update(['estado' => 'cerrada']);
+            } catch (\Throwable $e) {
+                report($e);
+            }
+        }
+
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect('/');
+    }
+
+    public function passwordEdit()
+    {
+        return view('admin.password.edit');
+    }
+
+    public function passwordUpdate(Request $request)
+    {
+        $request->validate([
+            'password_actual' => ['required'],
+            'password' => [...self::REGLAS_PASSWORD, 'different:password_actual'],
+        ], [
+            'password.different' => 'La nueva contraseña debe ser distinta de la actual.',
+        ], [
+            'password' => 'la nueva contraseña',
+        ]);
+
+        $admin = Auth::user();
+
+        if (!Hash::check($request->password_actual, $admin->password_hash)) {
+            return back()->withErrors(['password_actual' => 'La contraseña actual no es correcta.']);
+        }
+
+        try {
+            // RNF21 / CU 28.2: se cierran las demás sesiones de la cuenta y se conserva la que está en uso.
+            $tokenActual = hash('sha256', (string) $request->session()->get('sesion_ingecon'));
+            $this->db->transaccion(function () use ($admin, $request, $tokenActual) {
+                $this->db->update($admin, ['password_hash' => Hash::make($request->password)]);
+                $this->db->query(Sesion::class)->where('id_admin', $admin->id_admin)->where('estado', 'activa')
+                    ->where('token_hash', '!=', $tokenActual)->update(['estado' => 'cerrada']);
+            });
+        } catch (\Throwable $e) {
+            report($e);
+            return back()->withErrors(['password' => 'No se pudo actualizar la contraseña. Intente nuevamente.']);
+        }
+
+        return back()->with('success', 'Contraseña actualizada correctamente.');
+    }
+
+    public function sendResetLink(Request $request)
+    {
+        $request->validate(['correo' => ['required', 'email']]);
+        $generico = 'Si el correo ingresado corresponde a una cuenta, le enviamos un enlace de recuperación.';
+
+        // Cinco solicitudes por hora por correo. Al superarlo se responde igual, para no revelar si la cuenta existe.
+        $clave = 'recuperacion:' . hash('sha256', mb_strtolower((string) $request->correo));
+        if (RateLimiter::tooManyAttempts($clave, self::LIMITE_RECUPERACIONES_POR_HORA)) {
+            return back()->with('success', $generico);
+        }
+        RateLimiter::hit($clave, 3600);
+
+        try {
+            $admin = $this->db->query(Administrador::class)->where('correo', $request->correo)->first();
+        } catch (\Throwable $e) {
+            report($e);
+            return back()->withErrors(['correo' => 'La recuperación no está disponible temporalmente. Intente nuevamente.']);
+        }
+
+        if ($admin) {
+            $token = Str::random(64);
+
+            try {
+                $this->db->create(RecuperacionPassword::class, [
+                    'id_admin' => $admin->id_admin,
+                    'token_hash' => hash('sha256', $token),
+                    'expira_en' => Carbon::now()->addMinutes(60),
+                    'created_at' => Carbon::now(),
+                ]);
+            } catch (\Throwable $e) {
+                report($e);
+
+                return back()->withErrors([
+                    'correo' => 'No se pudo generar el enlace de recuperación. Por favor, intente nuevamente.',
+                ]);
+            }
+
+            try {
+                $this->notificaciones->notificarRecuperacionPassword($admin, $token);
+            } catch (\Throwable $e) {
+                report($e);
+
+                return back()->with('success', 'Su solicitud fue registrada. El envío del correo podría demorar unos minutos.');
+            }
+        }
+
+        return back()->with('success', $generico);
+    }
+
+    public function showResetForm(string $token)
+    {
+        $recuperacion = $this->buscarTokenValido($token);
+
+        if (!$recuperacion) {
+            abort(404, 'El enlace de recuperación no es válido o ya expiró.');
+        }
+
+        return view('auth.reset-password', ['token' => $token]);
+    }
+
+    public function reset(Request $request)
+    {
+        $request->validate([
+            'token' => ['required'],
+            'password' => self::REGLAS_PASSWORD,
+        ], [], [
+            'password' => 'la nueva contraseña',
+        ]);
+
+        $recuperacion = $this->buscarTokenValido($request->token);
+
+        if (!$recuperacion) {
+            return back()->withErrors(['token' => 'El enlace de recuperación no es válido o ya expiró. Solicite uno nuevo.']);
+        }
+
+        try {
+            $actualizada = $this->db->transaccion(function () use ($recuperacion, $request) {
+                $token = $this->db->query(RecuperacionPassword::class)->whereKey($recuperacion->id_recuperacion)
+                    ->whereNull('usado_en')->where('expira_en', '>', Carbon::now())
+                    ->lockForUpdate()->first();
+                if (!$token || !$token->administrador) return false;
+                $this->db->update($token->administrador, ['password_hash' => Hash::make($request->password)]);
+                $this->db->update($token, ['usado_en' => Carbon::now()]);
+                // RNF21 / CU 31.2: se cierran todas las sesiones abiertas de la cuenta.
+                $this->db->query(Sesion::class)->where('id_admin', $token->id_admin)->where('estado', 'activa')->update(['estado' => 'cerrada']);
+                return true;
+            });
+        } catch (\Throwable $e) {
+            report($e);
+            return back()->withErrors(['password' => 'No se pudo restablecer la contraseña. Intente nuevamente.']);
+        }
+        if (!$actualizada) {
+            return back()->withErrors(['token' => 'El enlace de recuperación no es válido o ya expiró. Solicite uno nuevo.']);
+        }
+
+        return redirect('/login')->with('success', 'Contraseña restablecida correctamente. Ya puede iniciar sesión.');
+    }
+
+    private function buscarTokenValido(string $token): ?RecuperacionPassword
+    {
+        return $this->db->query(RecuperacionPassword::class)
+            ->where('token_hash', hash('sha256', $token))
+            ->whereNull('usado_en')
+            ->where('expira_en', '>', Carbon::now())
+            ->first();
+    }
+}

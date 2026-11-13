@@ -1,0 +1,68 @@
+<?php
+
+namespace Tests\Feature;
+
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Storage;
+use Tests\TestCase;
+use App\Models\Administrador;
+use App\Models\Contenido;
+
+class ContenidoManagementTest extends TestCase
+{
+    use RefreshDatabase;
+
+    public function test_guest_cannot_access_content_panel()
+    {
+        $response = $this->get('/admin/contenido');
+        $response->assertRedirect('/login');
+    }
+
+    public function test_admin_can_add_faq_content()
+    {
+        $admin = Administrador::factory()->editorContenido()->create();
+
+        $response = $this->loginAdmin($admin)->post('/admin/contenido', [
+            'seccion' => 'faq',
+            'titulo' => '¿Hacen despachos a regiones?',
+            'cuerpo' => 'Sí, despachamos a nivel nacional desde nuestras 3 plantas.',
+        ]);
+
+        $response->assertRedirect();
+        $this->assertDatabaseHas('contenidos', [
+            'seccion' => 'faq',
+            'titulo' => '¿Hacen despachos a regiones?',
+        ]);
+    }
+
+    public function test_admin_can_update_content()
+    {
+        $admin = Administrador::factory()->editorContenido()->create();
+        $contenido = Contenido::create([
+            'seccion' => 'faq', 'titulo' => 'Pregunta original', 'cuerpo' => 'Respuesta original',
+            'orden' => 0, 'activo' => true, 'id_admin' => $admin->id_admin,
+        ]);
+
+        $response = $this->loginAdmin($admin)->put("/admin/contenido/{$contenido->id_contenido}", [
+            'titulo' => 'Pregunta editada',
+            'cuerpo' => 'Respuesta editada',
+        ]);
+
+        $response->assertRedirect();
+        $this->assertDatabaseHas('contenidos', ['id_contenido' => $contenido->id_contenido, 'titulo' => 'Pregunta editada']);
+    }
+
+    public function test_admin_can_delete_content()
+    {
+        $admin = Administrador::factory()->editorContenido()->create();
+        $contenido = Contenido::create([
+            'seccion' => 'faq', 'titulo' => '¿Hacen despachos?', 'cuerpo' => 'Sí, a todo Chile.',
+            'orden' => 0, 'activo' => true, 'id_admin' => $admin->id_admin,
+        ]);
+
+        $response = $this->loginAdmin($admin)->delete("/admin/contenido/{$contenido->id_contenido}");
+
+        $response->assertRedirect();
+        $this->assertDatabaseMissing('contenidos', ['id_contenido' => $contenido->id_contenido]);
+    }
+}
