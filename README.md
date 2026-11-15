@@ -45,3 +45,6 @@ https://drive.google.com/file/d/1b2YGh6_JLkISjPkpu9_SQB1poW0aZalD/view?usp=drive
 
 -Testimonio Ingecon Guillermo
 https://drive.google.com/file/d/1ubqi7dwWPpbRPXq_BHbY4XIF4DoLZYXA/view?usp=drive_link
+
+-Video Validación Pagina Cliente Guillermo
+https://drive.google.com/file/d/1h4LUuOhr3p0GM0j_k9BNf5lCLXDjAOYe/view?usp=drive_link
